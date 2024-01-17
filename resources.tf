@@ -6,7 +6,7 @@ resource "aws_vpc" "main" {
   }
 }
 
-# Create Public subnet under main vpc
+# Create Public subnet under main vpc for us-east-1a
 resource "aws_subnet" "public_subnet_1a" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.1.0/24"
@@ -16,7 +16,7 @@ resource "aws_subnet" "public_subnet_1a" {
   }
 }
 
-# Create Private subnet under main vpc
+# Create Public subnet under main vpc for us-east-1b
 resource "aws_subnet" "public_subnet_1b" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.2.0/24"
@@ -47,7 +47,7 @@ resource "aws_route_table" "route_table_public" {
   }
 }
 
-# associate route table with public subnet
+# associate route table with public subnets
 resource "aws_route_table_association" "public-public_subnet_1a" {
   subnet_id      = aws_subnet.public_subnet_1a.id
   route_table_id = aws_route_table.route_table_public.id
@@ -87,6 +87,7 @@ resource "aws_security_group" "web_server" {
   }
 }
 
+# A launch config with server installed
 resource "aws_launch_configuration" "web_server_as" {
   image_id        = "ami-0c7217cdde317cfec"
   instance_type   = "t2.micro"
@@ -99,6 +100,7 @@ resource "aws_launch_configuration" "web_server_as" {
               EOF
 }
 
+# Auto scalling group
 resource "aws_autoscaling_group" "web_server_asg" {
   name                 = "web-server-asg"
   launch_configuration = aws_launch_configuration.web_server_as.name
